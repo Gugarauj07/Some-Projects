@@ -10,7 +10,7 @@ from tkinter import *
 import serial.tools.list_ports
 import threading
 import signal
-
+import time
 
 def signal_handler(signum, frame):
     sys.exit()
@@ -21,7 +21,7 @@ signal.signal(signal.SIGINT, signal_handler)
 
 # Inicia a interface tkinter
 def connect_menu_init():
-    global root, connect_btn, refresh_btn, entry_arquivo, arquivo
+    global root, connect_btn, refresh_btn
     root = Tk()
     root.title("Serial communication")
     root.geometry("500x500")
@@ -38,30 +38,11 @@ def connect_menu_init():
     refresh_btn.grid(column=3, row=2)
 
     connect_btn = Button(root, text="Connect", height=2,
-                         width=10, state="disabled", command=lambda: [connexion(), datalogger()])
+                         width=10, state="disabled", command=lambda: [connexion()])
     connect_btn.grid(column=3, row=3)
-
-    arquivo_label = Label(root, text="File logger name: ", bg="white")
-    arquivo_label.grid(column=1, row=4, pady=20, padx=10)
-
-    entry_arquivo = Entry(root, bg="light grey", bd=5)
-    entry_arquivo.config(width=25)
-    entry_arquivo.grid(column=2, row=4, padx=50)
-
-    submit_btn = Button(root, text="Submit", height=2,
-                         width=10, state="active", command=get_file)
-    submit_btn.grid(column=3, row=4)
 
     baud_select()
     update_coms()
-
-
-def get_file():
-    global arquivo
-    arquivo = entry_arquivo.get()
-    # Apaga o conteudo anterior do arquivo logger
-    # with open(arquivo, 'w') as f:
-    #     pass
 
 
 # Checa se a porta e o baudrate estao prontos
@@ -104,7 +85,7 @@ def update_coms():
 
 def readSerial():
     print("thread start")
-    global serialData, sensor
+    global serialData, sensor, data
     while serialData:
         data = ser.readline()
         if len(data) > 0:
@@ -149,11 +130,13 @@ def connexion():
 
 
 # Faz a funcao de datalogger
-def datalogger():
-    data = str(ser.readline().decode("utf-8")).strip()
-    file = open(arquivo, "a")
-    file.write(f"{data}\n")
-    file.close()
+# def datalogger():
+#     arquivo = time.strftime("%Hh%M")
+#     while True:
+#         # data = str(ser.readline().decode("utf-8")).strip()
+#         file = open(f"{arquivo}.csv", "a")
+#         file.write(f"{str(sensor)}\n")
+#         file.close()
 
 
 def close_window():

@@ -6,6 +6,7 @@
 import serial
 import curses
 from drawnow import *
+import time
 import matplotlib
 
 matplotlib.use("TkAgg")
@@ -19,14 +20,16 @@ ser = serial.Serial('COM4', 9600, timeout=1)  # Porta, Baudrate
 ser.flushInput()
 
 # Apaga o conteudo anterior do arquivo logger
-with open("logger.csv", 'w') as f:
-    pass
+# with open(arquivo, 'w') as f:
+#     pass
 
 
 # Faz a funcao de datalogger
 def datalogger():
+    global arquivo
+    arquivo = time.strftime("%d.%m.%Y_%Hh%M")
     data = str(ser.readline().decode("utf-8")).strip()
-    file = open("logger.csv", "a")
+    file = open(f"{arquivo}.csv", "a")
     file.write(f"{data}\n")
     file.close()
 

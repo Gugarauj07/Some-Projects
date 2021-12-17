@@ -1,64 +1,152 @@
-# pip install pyserial
-# pip install windows-curses
-# pip install matplotlib
-# pip install drawnow
+###################################################################################################
+# Step 1 : Setup initial basic graphics
+# Step 2: Update available COMs & Baude rate
+# Step 3: Serial connection setup
+# Step 4: Dynamic GUI update
+# Step 5: Testing & Debugging
+###################################################################################################
 
-import serial
-import curses
-from drawnow import *
-import matplotlib
+from tkinter import *
+import serial.tools.list_ports
+import threading
+import signal
+import time
 
-matplotlib.use("TkAgg")
 
-# Inicia o curses
-stdscr = curses.initscr()
-stdscr.addstr("Distance: ")
+def signal_handler(signum, frame):
+    sys.exit()
 
-# Inicia a comunicacao serial
-ser = serial.Serial('COM4', 9600, timeout=1)  # Porta, Baudrate
-ser.flushInput()
 
-# Apaga o conteudo anterior do arquivo logger
-with open("logger.csv", 'w') as f:
-    pass
+signal.signal(signal.SIGINT, signal_handler)
+
+
+# Inicia a interface tkinter
+def connect_menu_init():
+    global root, connect_btn, refresh_btn  # Define variaveis como globais
+    root = Tk()
+    root.title("Serial communication")  # Titulo da interface
+    root.geometry("500x500")  # Tamanho da interface
+    root.config(bg="white")  # Background da interface
+
+    port_lable = Label(root, text="Available Port(s): ", bg="white")  # Configura o label das portas
+    port_lable.grid(column=1, row=2, pady=20, padx=10)
+
+    port_bd = Label(root, text="Baude Rate: ", bg="white")  # Configura o label do Baudrate
+    port_bd.grid(column=1, row=3, pady=20, padx=10)
+
+    refresh_btn = Button(root, text="Refresh", height=2,  # Configura o botao refresh
+                         width=10, command=update_coms)
+    refresh_btn.grid(column=3, row=2)
+
+    connect_btn = Button(root, text="Connect", height=2,  # Configura o botao connect
+                         width=10, state="disabled", command=lambda: [connexion(), ])
+    connect_btn.grid(column=3, row=3)
+
+    baud_select()
+    update_coms()
+
+
+# Checa se a porta e o baudrate estao prontos
+def connect_check(args):
+    if "-" in clicked_com.get() or "-" in clicked_bd.get():
+        connect_btn["state"] = "disable"
+    else:
+        connect_btn["state"] = "active"
+
+
+# Seleciona o baudrate desejado
+def baud_select():
+    global clicked_bd, drop_bd
+    clicked_bd = StringVar()
+    bds = ["9600",
+           "115200"]
+    clicked_bd.set(bds[0])
+    drop_bd = OptionMenu(root, clicked_bd, *bds, command=connect_check)
+    drop_bd.config(width=20)
+    drop_bd.grid(column=2, row=3, padx=50)
+
+
+# Mostra as opcoes de portas COM disponiveis
+def update_coms():
+    global clicked_com, drop_COM
+    ports = serial.tools.list_ports.comports()
+    coms = [com[0] for com in ports]
+    coms.insert(0, "-")
+    try:
+        drop_COM.destroy()
+    except:
+        pass
+    clicked_com = StringVar()
+    clicked_com.set(coms[0])
+    drop_COM = OptionMenu(root, clicked_com, *coms, command=connect_check)
+    drop_COM.config(width=20)
+    drop_COM.grid(column=2, row=2, padx=50)
+    connect_check(0)
+
+
+# Leitura do serial
+def readSerial():
+    print("thread start")
+    global serialData, sensor
+    while serialData:
+        data = ser.readline()  # Le o serial
+        if len(data) > 0:
+            try:
+                sensor = int(data.decode('utf8'))
+                t2 = threading.Thread(target=datalogger())  # Executa o threading para o uso do datalogger em loop
+                t2.deamon = True
+                t2.start()
+                distance_label = Label(root, text=f"Distance: {sensor} cm", bg="white", font=("Verdana", "25")).grid(
+                    column=2, row=5)  # Mostra o sensor de distancia
+            except:
+                pass
+
+
+# Faz a conexao dos botoes com o serial
+def connexion():
+    global ser, serialData
+    if connect_btn["text"] in "Disconnect":
+        serialData = False
+        connect_btn["text"] = "Connect"
+        refresh_btn["state"] = "active"
+        drop_bd["state"] = "active"
+        drop_COM["state"] = "active"
+
+    else:
+        serialData = True
+        connect_btn["text"] = "Disconnect"
+        refresh_btn["state"] = "disable"
+        drop_bd["state"] = "disable"
+        drop_COM["state"] = "disable"
+        port = clicked_com.get()
+        baud = clicked_bd.get()
+        try:
+            ser = serial.Serial(port, baud, timeout=1)
+        except:
+            pass
+        t1 = threading.Thread(target=readSerial)
+        t1.deamon = True
+        t1.start()
+
+
+arquivo = time.strftime("%d.%m.%Y_%Hh%M")
 
 
 # Faz a funcao de datalogger
 def datalogger():
     data = str(ser.readline().decode("utf-8")).strip()
-    file = open("logger.csv", "a")
+    file = open(f"{arquivo}.csv", "a")
     file.write(f"{data}\n")
     file.close()
 
 
-distancia = [0]
-decoded_bytes = 0  # Define variaveis
+# Fecha a janela sem bugar o programa
+def close_window():
+    global root, serialData
+    serialData = False
+    root.destroy()
 
 
-# MatPlotLib
-def makeFig():  # funcao que faz o plot
-    plt.ion()  # Modo interativo para plotagem de graficos
-    maximo = max(distancia) * 1.2  # Maximo para o y
-    minimo = min(distancia) * 1.2 if min(distancia) < 0 else min(distancia) / 1.2  # Minimo para o y
-    plt.ylim(minimo, maximo)  # Valores min e max de y
-    plt.title('Live streaming sensor data')  # Titulo do grafico
-    plt.grid(True)  # Fundo quadriculado
-    distancia.append(decoded_bytes)  # Adiciona a informacao numa array para plotar
-    plt.plot(distancia, 'r-', label='distance')
-    plt.legend(loc='upper left')  # Escreve o label
-    if len(distancia) > 25:
-        distancia.pop(0)  # plota somente os ultimos 50 dados
-    plt.pause(.001)
-    plt.show()
-
-
-# Inicia o loop para mostrar as informacoes
-while True:  # Loop infinito
-    while ser.inWaiting() == 0:  # Espera chegar informacoes no serial
-        ser_bytes = ser.readline()  # Le a linha de texto do serial
-        if ser_bytes != '':
-            decoded_bytes = float(ser_bytes[0:len(ser_bytes) - 2].decode("utf-8"))  # Transforma em float
-        stdscr.addstr(0, 10, str(decoded_bytes))  # Mostra a informacao no terminal
-        stdscr.refresh()  # Atualiza o terminal
-        datalogger()  # Executa o datalogging
-        drawnow(makeFig)  # Executa o plot
+connect_menu_init()
+root.protocol("WM_DELETE_WINDOW", close_window)
+root.mainloop()
