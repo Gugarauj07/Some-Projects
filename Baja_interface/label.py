@@ -1,16 +1,14 @@
-###################################################################################################
-# Step 1 : Setup initial basic graphics
-# Step 2: Update available COMs & Baude rate
-# Step 3: Serial connection setup
-# Step 4: Dynamic GUI update
-# Step 5: Testing & Debugging
-###################################################################################################
-
+from random import randint
 from tkinter import *
 import serial.tools.list_ports
 import threading
 import signal
 import time
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+plt.style.use("ggplot")
 
 
 def signal_handler(signum, frame):
@@ -22,11 +20,10 @@ signal.signal(signal.SIGINT, signal_handler)
 
 # Inicia a interface tkinter
 def connect_menu_init():
-    global root, connect_btn, refresh_btn  # Define variaveis como globais
+    global root, connect_btn, refresh_btn, figure, a  # Define variaveis como globais
     root = Tk()
     root.title("Serial communication")  # Titulo da interface
-    root.geometry("500x500")  # Tamanho da interface
-    root.config(bg="white")  # Background da interface
+    root.config(bg="#fafafa")  # Background da interface
 
     port_lable = Label(root, text="Available Port(s): ", bg="white")  # Configura o label das portas
     port_lable.grid(column=1, row=2, pady=20, padx=10)
@@ -39,8 +36,19 @@ def connect_menu_init():
     refresh_btn.grid(column=3, row=2)
 
     connect_btn = Button(root, text="Connect", height=2,  # Configura o botao connect
-                         width=10, state="disabled", command=lambda: [connexion(), ])
+                         width=10, state="disabled", command=connexion)
     connect_btn.grid(column=3, row=3)
+
+    figure = Figure(figsize=(5, 4), dpi=100)
+    a = figure.add_subplot(111)
+
+    canvas = FigureCanvasTkAgg(figure, master=root)
+    canvas.draw()
+    canvas.get_tk_widget().grid(column=2, row=6)
+
+    # toolbar = NavigationToolbar2Tk(canvas, root)
+    # toolbar.update()
+    # canvas.get_tk_widget().grid(column=2, row=6)
 
     baud_select()
     update_coms()
@@ -129,17 +137,6 @@ def connexion():
         t1.start()
 
 
-arquivo = time.strftime("%d.%m.%Y_%Hh%M")
-
-
-# Faz a funcao de datalogger
-def datalogger():
-    data = str(ser.readline().decode("utf-8")).strip()
-    file = open(f"{arquivo}.csv", "a")
-    file.write(f"{data}\n")
-    file.close()
-
-
 # Fecha a janela sem bugar o programa
 def close_window():
     global root, serialData
@@ -147,6 +144,30 @@ def close_window():
     root.destroy()
 
 
+arquivo = time.strftime("%d.%m.%Y_%Hh%M")
+
+
+# Faz a funcao de datalogger
+def datalogger():
+    data_decoded = str(ser.readline().decode("utf-8")).strip()
+    file = open(f"{arquivo}.csv", "a")
+    file.write(f"{data_decoded}\n")
+    file.close()
+
+
+xList = [0]
+
+
+def matplot(i):
+    xList.append(randint(0,10))
+    a.cla()
+    a.plot(xList, 'r-', label='distance')
+    a.draw()
+
+
 connect_menu_init()
+
+ani = animation.FuncAnimation(plt.gcf(), matplot, interval=1000)
+
 root.protocol("WM_DELETE_WINDOW", close_window)
 root.mainloop()
