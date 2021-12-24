@@ -10,7 +10,7 @@ import time
 import matplotlib
 
 matplotlib.use("TkAgg")
-
+plt.style.use('ggplot')
 # Inicia o curses
 stdscr = curses.initscr()
 stdscr.addstr("Distance: ")
@@ -18,10 +18,6 @@ stdscr.addstr("Distance: ")
 # Inicia a comunicacao serial
 ser = serial.Serial('COM4', 9600, timeout=1)  # Porta, Baudrate
 ser.flushInput()
-
-# Apaga o conteudo anterior do arquivo logger
-# with open(arquivo, 'w') as f:
-#     pass
 
 
 # Faz a funcao de datalogger
@@ -44,7 +40,6 @@ def makeFig():  # Cria uma funcao que faz o plot
     minimo = min(distancia) * 1.2 if min(distancia) < 0 else min(distancia) / 1.2  # Minimo para o y
     plt.ylim(minimo, maximo)  # Valores min e max de y
     plt.title('Live streaming sensor data')  # Titulo do grafico
-    plt.grid(True)  # Fundo quadriculado
     distancia.append(decoded_bytes)  # Adiciona a informacao numa array para plotar
     plt.plot(distancia, 'r-', label='distance')
     plt.legend(loc='upper left')  # Escreve o label
