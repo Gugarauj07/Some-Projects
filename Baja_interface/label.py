@@ -1,4 +1,3 @@
-from random import randint
 from tkinter import *
 import serial.tools.list_ports
 import threading
@@ -7,7 +6,8 @@ import time
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 plt.style.use("ggplot")
 
 
@@ -20,7 +20,7 @@ signal.signal(signal.SIGINT, signal_handler)
 
 # Inicia a interface tkinter
 def connect_menu_init():
-    global root, connect_btn, refresh_btn, figure, a  # Define variaveis como globais
+    global root, connect_btn, refresh_btn, fig, ax, figure  # Define variaveis como globais
     root = Tk()
     root.title("Serial communication")  # Titulo da interface
     root.config(bg="#fafafa")  # Background da interface
@@ -40,7 +40,8 @@ def connect_menu_init():
     connect_btn.grid(column=3, row=3)
 
     figure = Figure(figsize=(5, 4), dpi=100)
-    a = figure.add_subplot(111)
+    fig = plt.figure()
+    ax = figure.add_subplot(111)
 
     canvas = FigureCanvasTkAgg(figure, master=root)
     canvas.draw()
@@ -155,19 +156,22 @@ def datalogger():
     file.close()
 
 
-xList = [0]
+xs = [0]
+ys = [0]
 
 
 def matplot(i):
-    xList.append(randint(0,10))
-    a.cla()
-    a.plot(xList, 'r-', label='distance')
-    a.draw()
+    # Limit x and y lists to 20 items
+
+    xs.append(sensor)
+    ys.append(i + 1)
+    ax.clear()
+    ax.plot(xs, ys, label="Experimental Probability")
+    ax.draw()
 
 
 connect_menu_init()
-
-ani = animation.FuncAnimation(plt.gcf(), matplot, interval=1000)
-
+ani = animation.FuncAnimation(figure, matplot, interval=1000)
+plt.show()
 root.protocol("WM_DELETE_WINDOW", close_window)
 root.mainloop()
