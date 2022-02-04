@@ -1,28 +1,26 @@
-# import serial
-import sys
-import serial.tools.list_ports
+# from PySide6.QtSerialPort import QSerialPortInfo
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QComboBox
+import sys
+from main import *
 
 
 class Window_Connect(QWidget):
     def __init__(self):
         super(Window_Connect, self).__init__()
+        self.serial = customSerial()
         self.setWindowTitle("Serial Communication")  # Titulo
         self.setWindowIcon(QIcon("qt.png"))  # Icone
         self.setGeometry(500, 300, 500, 100)  # Tamanho
         self.setStyleSheet('background-color: #2c2c2c')  # CSS
 
-        # def create_widgets(self):
-        refresh = QPushButton("Refresh")
-        refresh.setStyleSheet('background-color: #ffd700')
-        # refresh.setGeometry(500, 20, 80, 30)
-        refresh.clicked.connect(self.clicked_refresh)
+        self.refresh = QPushButton("Refresh")
+        self.refresh.setStyleSheet('background-color: #ffd700')
+        self.refresh.clicked.connect(self.update_ports)
 
-        global connect
-        connect = QPushButton("Connect")
-        connect.setStyleSheet('background-color: #ffd700')
-        connect.clicked.connect(self.clicked_connect)
+        self.connect = QPushButton("Connect")
+        self.connect.setStyleSheet('background-color: #ffd700')
+        self.connect.clicked.connect(self.connect_serial)
 
         label1 = QLabel("Available Port(s): ")
         label1.setStyleSheet('color: #ffd700')
@@ -32,52 +30,49 @@ class Window_Connect(QWidget):
         label2 = QLabel("Baude Rate: ")
         label2.setStyleSheet('color: #ffd700')
 
-        global clicked_com, ports, coms
-        clicked_com = QComboBox()
-        clicked_com.setStyleSheet('color: #ffd700')
-        self.value_com = clicked_com.currentText()
-        clicked_bd = QComboBox()
-        bds = ["9600", "115200"]
-        for i in bds:
-            clicked_bd.addItem(i)
-        clicked_bd.setStyleSheet('color: #ffd700')
-        self.value_bds = clicked_bd.currentText()
+        self.clicked_com = QComboBox()
+        self.clicked_com.setStyleSheet('color: #ffd700')
+        self.connect_check()
+
+        self.clicked_bd = QComboBox()
+        self.clicked_bd.setStyleSheet('color: #ffd700')
+
+        self.clicked_bd.addItems(self.serial.baudratesDIC.keys())
+        self.clicked_bd.setCurrentText('9600')
+        self.update_ports()
 
         grid = QGridLayout()
         grid.addWidget(label1, 0, 0)
         grid.addWidget(label2, 1, 0)
-        grid.addWidget(connect, 1, 2)
-        grid.addWidget(refresh, 0, 2)
-        grid.addWidget(clicked_com, 0, 1)
-        grid.addWidget(clicked_bd, 1, 1)
+        grid.addWidget(self.connect, 1, 2)
+        grid.addWidget(self.refresh, 0, 2)
+        grid.addWidget(self.clicked_com, 0, 1)
+        grid.addWidget(self.clicked_bd, 1, 1)
         self.setLayout(grid)
 
-    # def connect_check(self, args):
-    #     if "-" == self.value_com:
-    #         connect.setEnabled(False)
-    #     else:
-    #         connect.setEnabled(True)
+    def connect_serial(self):
+        # if self.connect.isChecked():
+        port = self.clicked_com.currentText()
+        baud = self.clicked_bd.currentText()
+        self.serial.serialPort.port = port
+        self.serial.serialPort.baudrate = baud
+        self.serial.connect_serial()
 
-    def clicked_refresh(self):
-        ports = serial.tools.list_ports.comports()
-        coms = [com[0] for com in ports]
-        for c in coms:
-            clicked_com.addItem(c)
-
-    def clicked_connect(self):
-        # ser = serial.Serial(self.value_com, self.value_bds, timeout=1)
-        self.w = MainWindow()
-        self.w.show()
+        self.window = MainWindow()
+        self.window.show()
         self.hide()
 
+    def update_ports(self):
+        self.serial.update_ports()
+        self.clicked_com.clear()
+        self.clicked_com.addItems(self.serial.portList)
+        self.connect_check()
 
-class MainWindow(QWidget):
-    def __init__(self):
-        super(MainWindow, self).__init__()
-        self.setWindowTitle("Data visualization")  # Titulo
-        self.setWindowIcon(QIcon("qt.png"))  # Icone
-        # self.setGeometry(100, 100, 500, 100)  # Tamanho
-        self.setStyleSheet('background-color: #2c2c2c')  # CSS
+    def connect_check(self):
+        if len(self.serial.portList) == 0:
+            self.connect.setEnabled(False)
+        else:
+            self.connect.setEnabled(True)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+import sys
 from tkinter import *
 import serial.tools.list_ports
 import threading
@@ -40,19 +41,23 @@ def connect_menu_init():
     connect_btn.grid(column=3, row=3)
 
     figure = Figure(figsize=(5, 4), dpi=100)
-    fig = plt.figure()
+    # fig = plt.figure()
     ax = figure.add_subplot(111)
 
     canvas = FigureCanvasTkAgg(figure, master=root)
     canvas.draw()
     canvas.get_tk_widget().grid(column=2, row=6)
 
-    # toolbar = NavigationToolbar2Tk(canvas, root)
-    # toolbar.update()
-    # canvas.get_tk_widget().grid(column=2, row=6)
+    # # toolbar = NavigationToolbar2Tk(canvas, root)
+    # # toolbar.update()
+    # # canvas.get_tk_widget().grid(column=2, row=6)
 
     baud_select()
     update_coms()
+
+
+def newWindow():
+    pass
 
 
 # Checa se a porta e o baudrate estao prontos
@@ -101,12 +106,12 @@ def readSerial():
         data = ser.readline()  # Le o serial
         if len(data) > 0:
             try:
-                sensor = int(data.decode('utf8'))
+                sensor = float(data.decode('utf8'))
                 t2 = threading.Thread(target=datalogger())  # Executa o threading para o uso do datalogger em loop
                 t2.deamon = True
                 t2.start()
-                distance_label = Label(root, text=f"Distance: {sensor} cm", bg="white", font=("Verdana", "25")).grid(
-                    column=2, row=5)  # Mostra o sensor de distancia
+                Label(root, text=f"Distance: {sensor} cm", bg="white", font=("Verdana", "25")).grid(
+                    column=2, row=5)
             except:
                 pass
 
@@ -156,22 +161,11 @@ def datalogger():
     file.close()
 
 
-xs = [0]
-ys = [0]
-
-
 def matplot(i):
-    # Limit x and y lists to 20 items
-
-    xs.append(sensor)
-    ys.append(i + 1)
-    ax.clear()
-    ax.plot(xs, ys, label="Experimental Probability")
-    ax.draw()
+    pass
 
 
 connect_menu_init()
 ani = animation.FuncAnimation(figure, matplot, interval=1000)
-plt.show()
 root.protocol("WM_DELETE_WINDOW", close_window)
 root.mainloop()
