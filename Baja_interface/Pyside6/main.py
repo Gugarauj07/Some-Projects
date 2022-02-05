@@ -1,5 +1,5 @@
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QComboBox
+from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QComboBox, QTextEdit, QLCDNumber
 from customSerial import customSerial
 
 
@@ -12,4 +12,9 @@ class MainWindow(QWidget):
         # self.setGeometry(100, 100, 500, 100)  # Tamanho
         self.setStyleSheet('background-color: #2c2c2c')  # CSS
 
-        # Veloc_Label = QLabel(f"Velocidade: {data}")
+        velocidade = QLCDNumber()
+        velocidade.display(data)
+
+        grid = QGridLayout()
+        grid.addWidget(velocidade, 0, 0)
+        self.setLayout(grid)

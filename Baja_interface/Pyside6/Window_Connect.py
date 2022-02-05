@@ -1,4 +1,4 @@
-# from PySide6.QtSerialPort import QSerialPortInfo
+
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QComboBox
 import sys

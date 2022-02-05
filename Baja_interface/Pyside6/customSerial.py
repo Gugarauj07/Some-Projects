@@ -2,6 +2,7 @@ from threading import Event, Thread
 import serial
 import serial.tools.list_ports
 from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
+# from main import MainWindow
 
 
 class customSerial(QObject):
