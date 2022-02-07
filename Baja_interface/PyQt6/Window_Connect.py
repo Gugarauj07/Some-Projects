@@ -1,7 +1,7 @@
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QComboBox
 import sys
-from customSerial import *
+from main import *
 
 
 class Window_Connect(QWidget):

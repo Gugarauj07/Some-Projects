@@ -4,7 +4,7 @@ import serial.tools.list_ports
 import time
 from pathlib import Path
 from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
-from main import MainWindow
+# from main import MainWindow
 
 
 class customSerial(QObject):
@@ -12,9 +12,8 @@ class customSerial(QObject):
 
     def __init__(self):
         super().__init__()
-        self.file_lines = None
-        self.last_line = None
-        self.main = MainWindow()
+        self.data = None
+        self.last_lines = None
         self.serialPort = serial.Serial()
         self.serialPort.timeout = 0.5
 
@@ -22,7 +21,7 @@ class customSerial(QObject):
         path = Path("Arquivos_CSV")
         path.mkdir(parents=True, exist_ok=True)
         self.file = open(f"Arquivos_CSV/{self.arquivo}.csv", "w")
-        self.file.write(f"Start!\n")
+        # self.file.write(f"Start!\n")
         self.file.close()
 
         self.baudratesDIC = {
@@ -56,15 +55,12 @@ class customSerial(QObject):
             if len(self.data) > 0:
                 self.data_available.emit(self.data)
                 # # print(self.data)
-                # print(self.last_line)
+                print(self.data)
 
                 self.file = open(f"Arquivos_CSV/{self.arquivo}.csv", "r+")
-                self.file.write(f"{self.data}\n")
-                self.last_line = self.file.readlines()[-1].strip()
+                self.file.write(f"{float(self.data)}\n")
+                # self.last_lines = self.file.readlines()
                 self.file.close()
-
-                self.main.lcd.display(self.data)
-                self.main.label.setText(str(self.file_lines))
 
     def start_thread(self):
         self.thread = Thread(target=self.read_serial)
