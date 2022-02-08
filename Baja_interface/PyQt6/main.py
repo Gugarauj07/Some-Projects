@@ -56,9 +56,11 @@ class Window_Connect(QWidget):
         baud = self.clicked_bd.currentText()
         self.serial.serialPort.port = port
         self.serial.serialPort.baudrate = baud
+        # self.helper.textSignal.connect(self.txtUID.setText)
         self.serial.connect_serial()
 
         self.window = MainWindow()
+        self.serial.update_window(self.window)
         self.window.show()
         self.hide()
 
@@ -78,7 +80,7 @@ class Window_Connect(QWidget):
 class MainWindow(QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
-        # self.serial = customSerial()
+        self.serial = customSerial()
         self.setWindowTitle("Data visualization")  # Titulo
         self.setWindowIcon(QIcon("qt.png"))  # Icone
         # self.setGeometry(100, 100, 500, 100)  # Tamanho
@@ -88,6 +90,7 @@ class MainWindow(QWidget):
 
         self.labelVelocidade = QLabel("Velocidade: ")
         self.labelVelocidade.setStyleSheet('color: #ffd700')
+        self.serial.data_available.connect(self.labelVelocidade.setText)
 
         self.labelRPM = QLabel("RPM do motor: ")
         self.labelRPM.setStyleSheet('color: #ffd700')

@@ -5,16 +5,14 @@ import time
 from pathlib import Path
 from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
 from pyqtgraph import PlotWidget, plot
-from main import MainWindow
 
 
 class customSerial(QObject):
-    # data_available = pyqtSignal(str)
+    data_available = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
 
-        self.main = MainWindow()
         self.serialPort = serial.Serial()
         self.serialPort.timeout = 0.5
 
@@ -52,20 +50,22 @@ class customSerial(QObject):
         while self.alive.isSet() and self.serialPort.is_open:
             self.data = self.serialPort.readline().decode("utf-8").strip()
 
-            self.main.labelVelocidade.setText(self.data)
+            self.window.labelVelocidade.setText(self.data)
 
-            if len(self.data) > 0:
-                # self.data_available.emit(self.data)
-                print(self.data)
+            self.data_available.emit(self.data)
+            print(self.data)
 
-                self.file = open(f"Arquivos_CSV/{self.arquivo}.csv", "a")
-                self.file.write(f"{float(self.data)}\n")
-                # self.last_lines = self.file.readlines()
-                self.file.close()
-                # self.main.graphVelocidade.plot(self.array)
+            self.file = open(f"Arquivos_CSV/{self.arquivo}.csv", "a")
+            self.file.write(f"{(self.data)}\n")
+            # self.last_lines = self.file.readlines()
+            self.file.close()
+            # self.main.graphVelocidade.plot(self.array)
 
     def start_thread(self):
         self.thread = Thread(target=self.read_serial)
         self.thread.setDaemon(1)
         self.alive.set()
         self.thread.start()
+
+    def update_window(self, window):
+        self.window = window
