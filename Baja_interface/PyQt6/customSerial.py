@@ -21,9 +21,7 @@ class customSerial(QObject):
         self.arquivo = time.strftime("%d.%m.%Y_%Hh%M")
         path = Path("Arquivos_CSV")
         path.mkdir(parents=True, exist_ok=True)
-        self.file = open(f"Arquivos_CSV/{self.arquivo}.csv", "w")
-        # self.file.write(f"Start!\n")
-        self.file.close()
+        # self.file = open(f"Arquivos_CSV/{self.arquivo}.csv", "w")
 
         self.baudratesDIC = {
             '9600': 9600,
@@ -60,7 +58,7 @@ class customSerial(QObject):
                 # self.data_available.emit(self.data)
                 print(self.data)
 
-                self.file = open(f"Arquivos_CSV/{self.arquivo}.csv", "r+")
+                self.file = open(f"Arquivos_CSV/{self.arquivo}.csv", "a")
                 self.file.write(f"{float(self.data)}\n")
                 # self.last_lines = self.file.readlines()
                 self.file.close()

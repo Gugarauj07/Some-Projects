@@ -17,6 +17,48 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\Baja_interface\PyQt6\Arquivos_CSV\07.02.2022_23h00.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Baja_interface\PyQt6\Arquivos_CSV\07.02.2022_23h02.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Baja_interface\PyQt6\Arquivos_CSV\07.02.2022_23h03.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Baja_interface\PyQt6\Arquivos_CSV\07.02.2022_23h04.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Baja_interface\PyQt6\Arquivos_CSV\07.02.2022_23h12.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Baja_interface\PyQt6\Arquivos_CSV\07.02.2022_23h21.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>
