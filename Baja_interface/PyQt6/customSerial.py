@@ -3,8 +3,8 @@ import serial
 import serial.tools.list_ports
 import time
 from pathlib import Path
-from PyQt6.QtCore import QObject, pyqtSignal, pyqtSlot
-from pyqtgraph import PlotWidget, plot
+from PyQt6.QtCore import QObject, pyqtSignal
+from pyqtgraph import PlotWidget, plot, mkPen
 
 
 class customSerial(QObject):
@@ -12,6 +12,8 @@ class customSerial(QObject):
 
     def __init__(self):
         super().__init__()
+
+        self.velocidadeArray = list()
 
         self.serialPort = serial.Serial()
         self.serialPort.timeout = 0.5
@@ -37,29 +39,25 @@ class customSerial(QObject):
         self.portList = [port.device for port in serial.tools.list_ports.comports()]
         print(self.portList)
 
-    def connect_serial(self):
-        try:
-            self.serialPort.open()
-        except:
-            print("ERROR SERIAL")
-
-        if self.serialPort.is_open:
-            self.start_thread()
-
     def read_serial(self):
         while self.alive.isSet() and self.serialPort.is_open:
             self.data = self.serialPort.readline().decode("utf-8").strip()
 
-            self.window.labelVelocidade.setText(self.data)
+            if len(self.data) > 0:
 
-            self.data_available.emit(self.data)
-            print(self.data)
+                self.window.labelVelocidade.setText(f"Velocidade: {self.data} Km/h")
 
-            self.file = open(f"Arquivos_CSV/{self.arquivo}.csv", "a")
-            self.file.write(f"{(self.data)}\n")
-            # self.last_lines = self.file.readlines()
-            self.file.close()
-            # self.main.graphVelocidade.plot(self.array)
+                self.velocidadeArray.append(float(self.data))
+
+                pen = mkPen(width=2)
+                self.window.graphVelocidade.plot(self.velocidadeArray, pen=pen)
+
+                self.file = open(f"Arquivos_CSV/{self.arquivo}.csv", "a")
+                self.file.write(f"{self.data}\n")
+                self.file.close()
+
+                # self.data_available.emit(self.data)
+                print(self.data)
 
     def start_thread(self):
         self.thread = Thread(target=self.read_serial)

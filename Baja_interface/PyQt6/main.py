@@ -1,6 +1,5 @@
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QComboBox, QLCDNumber
-from pyqtgraph import PlotWidget, plot
+from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QComboBox
 import sys
 from customSerial import *
 
@@ -8,40 +7,38 @@ from customSerial import *
 class Window_Connect(QWidget):
     def __init__(self):
         super(Window_Connect, self).__init__()
-        self.serial = customSerial()
         self.setWindowTitle("Serial Communication")  # Titulo
         self.setWindowIcon(QIcon("qt.png"))  # Icone
         self.setGeometry(500, 300, 500, 100)  # Tamanho
         self.setStyleSheet('background-color: #2c2c2c')  # CSS
 
-        self.refresh = QPushButton("Refresh")
-        self.refresh.setStyleSheet('background-color: #ffd700')
-        self.refresh.clicked.connect(self.update_ports)
+        self.serial = customSerial()  # Chama a classe customSerial para a variavel "serial"
 
-        self.connect = QPushButton("Connect")
-        self.connect.setStyleSheet('background-color: #ffd700')
-        self.connect.clicked.connect(self.connect_serial)
+        self.refresh = QPushButton("Refresh")  # Cria o botao refresh
+        self.refresh.setStyleSheet('background-color: #ffd700')  # CSS do botao refresh
+        self.refresh.clicked.connect(self.update_ports)  # Conecta o refresh com o metodo update_ports
 
-        label1 = QLabel("Available Port(s): ")
-        label1.setStyleSheet('color: #ffd700')
-        # label.setGeometry(20, 20, 100, 30)
-        # label.setFont(QFont="")  # Fonte
+        self.connect = QPushButton("Connect")  # Cria o botao connect
+        self.connect.setStyleSheet('background-color: #ffd700')  # CSS do botao connect
+        self.connect.clicked.connect(self.connect_serial)  # Conecta o botao conecte com o metodo connect_serial
 
-        label2 = QLabel("Baude Rate: ")
-        label2.setStyleSheet('color: #ffd700')
+        label1 = QLabel("Available Port(s): ")  # Cria o label 1
+        label1.setStyleSheet('color: #ffd700')  # CSS do label 1
 
-        self.clicked_com = QComboBox()
-        self.clicked_com.setStyleSheet('color: #ffd700')
-        self.connect_check()
+        label2 = QLabel("Baude Rate: ")  # Cria o label 2
+        label2.setStyleSheet('color: #ffd700')  # CSS do label 2
 
-        self.clicked_bd = QComboBox()
-        self.clicked_bd.setStyleSheet('color: #ffd700')
+        self.clicked_com = QComboBox()  # Cria a caixa de opcoes de portas
+        self.clicked_com.setStyleSheet('color: #ffd700')  # CSS da caixa de opcoes de portas
+        self.connect_check()  # Chama a funcao connect_check
+        self.update_ports()  # Atualiza as portas disponiveis
 
-        self.clicked_bd.addItems(self.serial.baudratesDIC.keys())
-        self.clicked_bd.setCurrentText('9600')
-        self.update_ports()
+        self.clicked_bd = QComboBox()  # Cria a caixa de opcoes de baudrate
+        self.clicked_bd.setStyleSheet('color: #ffd700')  # CSS da caixa de opcoes de baudrate
+        self.clicked_bd.addItems(self.serial.baudratesDIC.keys())  # Adiciona itens a caixa de opcao
+        self.clicked_bd.setCurrentText('9600')  # Seta o baudrate default
 
-        grid = QGridLayout()
+        grid = QGridLayout()  # Cria uma grade de widgets
         grid.addWidget(label1, 0, 0)
         grid.addWidget(label2, 1, 0)
         grid.addWidget(self.connect, 1, 2)
@@ -51,17 +48,22 @@ class Window_Connect(QWidget):
         self.setLayout(grid)
 
     def connect_serial(self):
-        # if self.connect.isChecked():
-        port = self.clicked_com.currentText()
-        baud = self.clicked_bd.currentText()
+        port = self.clicked_com.currentText()  # Guarda a porta escolhida
+        baud = self.clicked_bd.currentText()  # Guarda o baudrate escolhido
         self.serial.serialPort.port = port
         self.serial.serialPort.baudrate = baud
-        # self.helper.textSignal.connect(self.txtUID.setText)
-        self.serial.connect_serial()
 
-        self.window = MainWindow()
-        self.serial.update_window(self.window)
-        self.window.show()
+        try:
+            self.serial.serialPort.open()  # Tenta abrir a porta serial
+        except:
+            print("ERROR SERIAL")
+
+        if self.serial.serialPort.is_open:
+            self.serial.start_thread()  # Inicia o processo de threading
+
+        self.main = MainWindow()  # Cria a nova janela "main"
+        self.serial.update_window(self.main)
+        self.main.show()
         self.hide()
 
     def update_ports(self):
@@ -90,7 +92,6 @@ class MainWindow(QWidget):
 
         self.labelVelocidade = QLabel("Velocidade: ")
         self.labelVelocidade.setStyleSheet('color: #ffd700')
-        self.serial.data_available.connect(self.labelVelocidade.setText)
 
         self.labelRPM = QLabel("RPM do motor: ")
         self.labelRPM.setStyleSheet('color: #ffd700')
@@ -99,8 +100,14 @@ class MainWindow(QWidget):
         self.labelGPS.setStyleSheet('color: #ffd700')
 
         self.graphVelocidade = PlotWidget()
+        self.graphVelocidade.setTitle("Velocidade")
+        self.graphVelocidade.setLabel('left', 'Km/h')
+        self.graphVelocidade.showGrid(x=True, y=True)
 
         self.graphRPM = PlotWidget()
+        self.graphVelocidade.setTitle("Rotação do motor")
+        self.graphVelocidade.setLabel('left', 'RPM')
+        self.graphVelocidade.showGrid(x=True, y=True)
 
         grid = QGridLayout()
         grid.addWidget(self.labelVelocidade, 0, 0)
@@ -114,6 +121,6 @@ class MainWindow(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = Window_Connect()
-    window.show()
+    window_connect = Window_Connect()
+    window_connect.show()
     sys.exit(app.exec())
