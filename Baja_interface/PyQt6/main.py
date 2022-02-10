@@ -1,7 +1,8 @@
-from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QComboBox
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QComboBox
 import sys
 from customSerial import *
+from analoggaugewidget import AnalogGaugeWidget
 
 
 class Window_Connect(QWidget):
@@ -38,7 +39,8 @@ class Window_Connect(QWidget):
         self.clicked_bd.addItems(self.serial.baudratesDIC.keys())  # Adiciona itens a caixa de opcao
         self.clicked_bd.setCurrentText('9600')  # Seta o baudrate default
 
-        grid = QGridLayout()  # Cria uma grade de widgets
+        # Cria uma grade de widgets
+        grid = QGridLayout()
         grid.addWidget(label1, 0, 0)
         grid.addWidget(label2, 1, 0)
         grid.addWidget(self.connect, 1, 2)
@@ -66,13 +68,13 @@ class Window_Connect(QWidget):
         self.main.show()
         self.hide()
 
-    def update_ports(self):
+    def update_ports(self):  # Da refresh nas portas disponiveis
         self.serial.update_ports()
         self.clicked_com.clear()
         self.clicked_com.addItems(self.serial.portList)
         self.connect_check()
 
-    def connect_check(self):
+    def connect_check(self):  # Desativa o botao connect caso nao esteja escolhido
         if len(self.serial.portList) == 0:
             self.connect.setEnabled(False)
         else:
@@ -83,36 +85,44 @@ class MainWindow(QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        self.serial = customSerial()
+        self.serial = customSerial()  # Chama a classe customSerial para a variavel "serial"
 
         self.setWindowTitle("Data visualization")  # Titulo
         self.setStyleSheet('background-color: #2c2c2c')  # CSS
 
-        # self.lcd = QLCDNumber(10)
+        css = 'color: #ffd700; font-size: 24px; font: Helvetica;'  # Padrao de estilo para a janela
 
-        self.labelVelocidade = QLabel("Velocidade: ")
-        self.labelVelocidade.setStyleSheet('color: #ffd700')
+        self.labelVelocidade = QLabel("Velocidade: ")  # Cria a label velocidade
+        self.labelVelocidade.setStyleSheet(css)  # Aplica o padrao
 
-        self.labelRPM = QLabel("RPM do motor: ")
-        self.labelRPM.setStyleSheet('color: #ffd700')
+        self.labelRPM = QLabel("RPM do motor: ")  # Cria a label rpm
+        self.labelRPM.setStyleSheet(css)  # Aplica o padrao
 
         # self.labelGPS = QLabel("GPS: ")
-        # self.labelGPS.setStyleSheet('color: #ffd700')
+        # self.labelGPS.setStyleSheet('color: #ffd700')\
 
-        self.graphVelocidade = PlotWidget()
-        self.graphVelocidade.setTitle("Velocidade")
-        self.graphVelocidade.showGrid(x=True, y=True)
+        self.velocimetro = AnalogGaugeWidget()
+        self.velocimetro.enableBarGraph = False
+        self.velocimetro.units = "Km/h"
+        self.velocimetro.minValue = 0
+        self.velocimetro.maxValue = 100
+        self.velocimetro.scalaCount = 10
+        self.velocimetro.setCustomGaugeTheme(color2='#ffd700', color1="#FFF5BA")
 
-        self.graphRPM = PlotWidget()
-        self.graphRPM.setTitle("Rotação do motor")
-        self.graphRPM.showGrid(x=True, y=True)
+        self.graphVelocidade = PlotWidget()  # Cria o grafico de velocidade
+        self.graphVelocidade.setTitle("Plotting")  # Define o titulo do grafico
+        self.graphVelocidade.showGrid(x=True, y=True)  # Mostra os eixos no grafico
+
+        # self.graphRPM = PlotWidget()
+        # self.graphRPM.setTitle("Rotação do motor")
+        # self.graphRPM.showGrid(x=True, y=True)
 
         grid = QGridLayout()
         grid.addWidget(self.labelVelocidade, 0, 0)
         grid.addWidget(self.labelRPM, 0, 1)
         # grid.addWidget(self.labelGPS, 0, 2)
-        grid.addWidget(self.graphVelocidade, 1, 0)
-        grid.addWidget(self.graphRPM, 1, 1)
+        grid.addWidget(self.velocimetro, 1, 0)
+        grid.addWidget(self.graphVelocidade, 1, 1)
         self.setLayout(grid)
 
 

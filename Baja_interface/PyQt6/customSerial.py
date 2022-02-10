@@ -3,7 +3,7 @@ import serial
 import serial.tools.list_ports
 from time import strftime
 from pathlib import Path
-from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal
 from pyqtgraph import PlotWidget, plot, mkPen
 import csv
 import pandas as pd
@@ -35,7 +35,7 @@ class customSerial(QObject):
             '57600': 57600,
             '115200': 115200
         }
-        self.portList = []
+        self.portList = list()
 
         self.thread = None
         self.alive = Event()
@@ -60,8 +60,9 @@ class customSerial(QObject):
 
                 self.window.labelVelocidade.setText(f"Velocidade: {self.data} Km/h")
 
-                pen = mkPen(width=2)
-                self.window.graphVelocidade.plot(self.velocidadeArray, pen=pen)
+                self.pen = mkPen(width=2)
+                self.window.graphVelocidade.clear()
+                self.window.graphVelocidade.plot(self.velocidadeArray, pen=self.pen)
 
     def start_thread(self):
         self.thread = Thread(target=self.read_serial)
