@@ -82,10 +82,10 @@ class Window_Connect(QWidget):
 class MainWindow(QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
+
         self.serial = customSerial()
+
         self.setWindowTitle("Data visualization")  # Titulo
-        self.setWindowIcon(QIcon("qt.png"))  # Icone
-        # self.setGeometry(100, 100, 500, 100)  # Tamanho
         self.setStyleSheet('background-color: #2c2c2c')  # CSS
 
         # self.lcd = QLCDNumber(10)
@@ -96,26 +96,23 @@ class MainWindow(QWidget):
         self.labelRPM = QLabel("RPM do motor: ")
         self.labelRPM.setStyleSheet('color: #ffd700')
 
-        self.labelGPS = QLabel("GPS: ")
-        self.labelGPS.setStyleSheet('color: #ffd700')
+        # self.labelGPS = QLabel("GPS: ")
+        # self.labelGPS.setStyleSheet('color: #ffd700')
 
         self.graphVelocidade = PlotWidget()
         self.graphVelocidade.setTitle("Velocidade")
-        self.graphVelocidade.setLabel('left', 'Km/h')
         self.graphVelocidade.showGrid(x=True, y=True)
 
         self.graphRPM = PlotWidget()
-        self.graphVelocidade.setTitle("Rotação do motor")
-        self.graphVelocidade.setLabel('left', 'RPM')
-        self.graphVelocidade.showGrid(x=True, y=True)
+        self.graphRPM.setTitle("Rotação do motor")
+        self.graphRPM.showGrid(x=True, y=True)
 
         grid = QGridLayout()
         grid.addWidget(self.labelVelocidade, 0, 0)
         grid.addWidget(self.labelRPM, 0, 1)
-        grid.addWidget(self.labelGPS, 0, 2)
+        # grid.addWidget(self.labelGPS, 0, 2)
         grid.addWidget(self.graphVelocidade, 1, 0)
         grid.addWidget(self.graphRPM, 1, 1)
-
         self.setLayout(grid)
 
 
