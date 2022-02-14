@@ -101,6 +101,27 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\Baja_interface\PyQt6\Arquivos_CSV\10.02.2022_23h43.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Baja_interface\PyQt6\Arquivos_CSV\11.02.2022_13h24.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Baja_interface\PyQt6\Arquivos_CSV\14.02.2022_12h33.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

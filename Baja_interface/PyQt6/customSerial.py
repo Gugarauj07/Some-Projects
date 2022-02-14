@@ -60,6 +60,8 @@ class customSerial(QObject):
 
                 self.window.labelVelocidade.setText(f"Velocidade: {self.data} Km/h")
 
+                self.window.velocimetro.updateValue(float(self.data))
+
                 self.pen = mkPen(width=2)
                 self.window.graphVelocidade.clear()
                 self.window.graphVelocidade.plot(self.velocidadeArray, pen=self.pen)

@@ -187,17 +187,8 @@ class AnalogGaugeWidget(QWidget):
         ################################################################################################
         # ENABLE NEEDLE MOUSE TRACKING BY DEFAULT
         ################################################################################################
-        self.setMouseTracking(True)
+        self.setMouseTracking(False)
 
-        ################################################################################################
-        # SET GAUGE UNITS
-        ################################################################################################
-        self.units = "℃"
-
-        # QTimer sorgt für neu Darstellung alle X ms
-        # evtl performance hier verbessern mit self.update() und self.use_timer_event = False
-        # todo: self.update als default ohne ueberpruefung, ob self.use_timer_event gesetzt ist oder nicht
-        # Timer startet alle 10ms das event paintEvent
         if self.use_timer_event:
             timer = QTimer(self)
             timer.timeout.connect(self.update)
