@@ -89,7 +89,7 @@ class MainWindow(QWidget):
 
         self.setWindowTitle("Data visualization")  # Titulo
         self.setStyleSheet('background-color: #2c2c2c')  # CSS
-
+        self.resize(1280,780)
         css = 'color: #ffd700; font-size: 24px; font: Helvetica;'  # Padrao de estilo para a janela
 
         self.labelVelocidade = QLabel("Velocidade: ")  # Cria a label velocidade
@@ -113,19 +113,19 @@ class MainWindow(QWidget):
         self.graphVelocidade.setTitle("Plotting")  # Define o titulo do grafico
         self.graphVelocidade.showGrid(x=True, y=True)  # Mostra os eixos no grafico
 
-        self.hbox1 = QHBoxLayout()
-        self.hbox1.addWidget(self.labelVelocidade)
-        self.hbox1.addWidget(self.labelRPM)
-        self.hbox1.addWidget(self.labelCVT)
+        self.vbox1 = QVBoxLayout()
+        self.vbox1.addWidget(self.labelVelocidade)
+        self.vbox1.addWidget(self.labelRPM)
+        self.vbox1.addWidget(self.labelCVT)
 
-        self.hbox2 = QHBoxLayout()
-        self.hbox2.addWidget(self.velocimetro)
-        self.hbox2.addWidget(self.graphVelocidade)
+        self.vbox2 = QVBoxLayout()
+        self.vbox2.addLayout(self.vbox1)
+        self.vbox2.addWidget(self.velocimetro)
 
-        self.vbox = QVBoxLayout()
-        self.vbox.addLayout(self.hbox1)
-        self.vbox.addLayout(self.hbox2)
-        self.setLayout(self.vbox)
+        self.hbox = QHBoxLayout()
+        self.hbox.addLayout(self.vbox2)
+        self.hbox.addWidget(self.graphVelocidade)
+        self.setLayout(self.hbox)
 
 
 if __name__ == "__main__":
