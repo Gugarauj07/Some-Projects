@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QComboBox
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QHBoxLayout, QComboBox, QVBoxLayout
 import sys
 from customSerial import *
 from analoggaugewidget import AnalogGaugeWidget
@@ -95,11 +95,11 @@ class MainWindow(QWidget):
         self.labelVelocidade = QLabel("Velocidade: ")  # Cria a label velocidade
         self.labelVelocidade.setStyleSheet(css)  # Aplica o padrao
 
-        self.labelRPM = QLabel("RPM do motor: ")  # Cria a label rpm
+        self.labelRPM = QLabel("Rpm do motor: ")  # Cria a label rpm
         self.labelRPM.setStyleSheet(css)  # Aplica o padrao
 
-        # self.labelGPS = QLabel("GPS: ")
-        # self.labelGPS.setStyleSheet('color: #ffd700')\
+        self.labelCVT = QLabel("Temperatura da CVT: ")
+        self.labelCVT.setStyleSheet(css)
 
         self.velocimetro = AnalogGaugeWidget()
         self.velocimetro.enableBarGraph = False
@@ -113,17 +113,19 @@ class MainWindow(QWidget):
         self.graphVelocidade.setTitle("Plotting")  # Define o titulo do grafico
         self.graphVelocidade.showGrid(x=True, y=True)  # Mostra os eixos no grafico
 
-        # self.graphRPM = PlotWidget()
-        # self.graphRPM.setTitle("Rotação do motor")
-        # self.graphRPM.showGrid(x=True, y=True)
+        self.hbox1 = QHBoxLayout()
+        self.hbox1.addWidget(self.labelVelocidade)
+        self.hbox1.addWidget(self.labelRPM)
+        self.hbox1.addWidget(self.labelCVT)
 
-        grid = QGridLayout()
-        grid.addWidget(self.labelVelocidade, 0, 0)
-        grid.addWidget(self.labelRPM, 0, 1)
-        # grid.addWidget(self.labelGPS, 0, 2)
-        grid.addWidget(self.velocimetro, 1, 0)
-        grid.addWidget(self.graphVelocidade, 1, 1)
-        self.setLayout(grid)
+        self.hbox2 = QHBoxLayout()
+        self.hbox2.addWidget(self.velocimetro)
+        self.hbox2.addWidget(self.graphVelocidade)
+
+        self.vbox = QVBoxLayout()
+        self.vbox.addLayout(self.hbox1)
+        self.vbox.addLayout(self.hbox2)
+        self.setLayout(self.vbox)
 
 
 if __name__ == "__main__":
