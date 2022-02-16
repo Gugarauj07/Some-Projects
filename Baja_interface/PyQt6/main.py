@@ -89,7 +89,7 @@ class MainWindow(QWidget):
 
         self.setWindowTitle("Data visualization")  # Titulo
         self.setStyleSheet('background-color: #2c2c2c')  # CSS
-        self.resize(1280,780)
+        self.resize(1280, 780)
         css = 'color: #ffd700; font-size: 24px; font: Helvetica;'  # Padrao de estilo para a janela
 
         self.labelVelocidade = QLabel("Velocidade: ")  # Cria a label velocidade
