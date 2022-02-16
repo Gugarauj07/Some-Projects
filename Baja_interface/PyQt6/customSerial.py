@@ -26,7 +26,7 @@ class customSerial(QObject):
 
         with open(f"Arquivos_CSV/{self.arquivo}.csv", 'w', newline='') as f:
             self.thewriter = csv.writer(f)
-            self.thewriter.writerow(['velocidade', 'rpm'])
+            self.thewriter.writerow(['velocidade', 'rpm', 'cvt'])
 
         self.baudratesDIC = {
             '9600': 9600,
@@ -64,7 +64,9 @@ class customSerial(QObject):
 
                 self.pen = mkPen(width=2)
                 self.window.graphVelocidade.clear()
-                self.window.graphVelocidade.plot(self.velocidadeArray, pen=self.pen)
+                self.window.graphVelocidade.plot(self.velocidadeArray, pen=self.pen, name = "Velocidade")
+                self.window.graphVelocidade.addLegend()
+
 
     def start_thread(self):
         self.thread = Thread(target=self.read_serial)
