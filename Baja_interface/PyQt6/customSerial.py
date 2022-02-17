@@ -15,6 +15,8 @@ class customSerial(QObject):
     def __init__(self):
         super().__init__()
 
+        self.cvtArray = list()
+        self.rpmArray = list()
         self.velocidadeArray = list()
 
         self.serialPort = serial.Serial()
@@ -47,26 +49,31 @@ class customSerial(QObject):
     def read_serial(self):
         while self.alive.isSet() and self.serialPort.is_open:
 
-            self.data = self.serialPort.readline().decode("utf-8").strip()
+            self.data = self.serialPort.readline().decode("utf-8").split(",")
 
             if len(self.data) > 0:
-
                 with open(f"Arquivos_CSV/{self.arquivo}.csv", 'a+', newline='') as f:
                     self.thewriter = csv.writer(f)
-                    self.thewriter.writerow([self.data])
+                    self.thewriter.writerow([self.data[0]])
 
                 df = pd.read_csv(f"Arquivos_CSV/{self.arquivo}.csv").tail(100)
-                self.velocidadeArray = list(df["velocidade"])
 
-                self.window.labelVelocidade.setText(f"Velocidade: {self.data} Km/h")
+                # self.velocidadeArray = list(df["velocidade"])
+                self.rpmArray = list(df["rpm"])
+                self.cvtArray = list(df["cvt"])
 
-                self.window.velocimetro.updateValue(float(self.data))
+                self.window.displayVeloc.display(self.data[0])
+                # self.window.displayRPM.display(self.data[1])
+                # self.window.displayCVT.display(self.data[2])
+
+                self.window.velocimetro.updateValue(float(self.data[0]))
 
                 self.pen = mkPen(width=2)
-                self.window.graphVelocidade.clear()
-                self.window.graphVelocidade.plot(self.velocidadeArray, pen=self.pen, name = "Velocidade")
-                self.window.graphVelocidade.addLegend()
+                self.window.graphRPM.clear()
+                self.window.graphRPM.plot(self.rpmArray, pen=self.pen)
 
+                self.window.graphCVT.clear()
+                self.window.graphCVT.plot(self.cvtArray, pen=self.pen)
 
     def start_thread(self):
         self.thread = Thread(target=self.read_serial)

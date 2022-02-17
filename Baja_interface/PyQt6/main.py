@@ -1,5 +1,6 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QHBoxLayout, QComboBox, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QHBoxLayout, QComboBox, \
+    QVBoxLayout, QLCDNumber
 import sys
 from customSerial import *
 from analoggaugewidget import AnalogGaugeWidget
@@ -89,17 +90,20 @@ class MainWindow(QWidget):
 
         self.setWindowTitle("Data visualization")  # Titulo
         self.setStyleSheet('background-color: #2c2c2c')  # CSS
-        self.resize(1280, 780)
+        self.resize(1200, 700)
         css = 'color: #ffd700; font-size: 24px; font: Helvetica;'  # Padrao de estilo para a janela
 
         self.labelVelocidade = QLabel("Velocidade: ")  # Cria a label velocidade
         self.labelVelocidade.setStyleSheet(css)  # Aplica o padrao
+        self.displayVeloc = QLCDNumber()
 
         self.labelRPM = QLabel("Rpm do motor: ")  # Cria a label rpm
         self.labelRPM.setStyleSheet(css)  # Aplica o padrao
+        self.displayRPM = QLCDNumber()
 
         self.labelCVT = QLabel("Temperatura da CVT: ")
         self.labelCVT.setStyleSheet(css)
+        self.displayCVT = QLCDNumber()
 
         self.velocimetro = AnalogGaugeWidget()
         self.velocimetro.enableBarGraph = False
@@ -109,22 +113,33 @@ class MainWindow(QWidget):
         self.velocimetro.scalaCount = 10
         self.velocimetro.setCustomGaugeTheme(color2='#ffd700', color1="#FFF5BA")
 
-        self.graphVelocidade = PlotWidget()  # Cria o grafico de velocidade
-        self.graphVelocidade.setTitle("Plotting")  # Define o titulo do grafico
-        self.graphVelocidade.showGrid(x=True, y=True)  # Mostra os eixos no grafico
+        self.graphRPM = PlotWidget()  # Cria o grafico de velocidade
+        self.graphRPM.setTitle("Plotting RPM")  # Define o titulo do grafico
+        self.graphRPM.showGrid(x=True, y=True)  # Mostra os eixos no grafico
 
-        self.vbox1 = QVBoxLayout()
-        self.vbox1.addWidget(self.labelVelocidade)
-        self.vbox1.addWidget(self.labelRPM)
-        self.vbox1.addWidget(self.labelCVT)
+        self.graphCVT = PlotWidget()
+        self.graphCVT.setTitle("Plotting CVT temperature")  # Define o titulo do grafico
+        self.graphCVT.showGrid(x=True, y=True)  # Mostra os eixos no grafico
+
+        self.grid = QGridLayout
+        self.grid.addWidget(self.labelVelocidade, 0, 0)
+        self.grid.addWidget(self.labelRPM, 0, 1)
+        self.grid.addWidget(self.labelCVT, 0, 2)
+        self.grid.addWidget(self.displayVeloc, 1, 0)
+        self.grid.addWidget(self.displayRPM, 1, 1)
+        self.grid.addWidget(self.displayCVT, 1, 2)
 
         self.vbox2 = QVBoxLayout()
-        self.vbox2.addLayout(self.vbox1)
+        self.vbox2.addLayout(self.grid)
         self.vbox2.addWidget(self.velocimetro)
+
+        self.vbox3 = QVBoxLayout()
+        self.vbox3.addWidget(self.graphRPM)
+        self.vbox3.addWidget(self.graphCVT)
 
         self.hbox = QHBoxLayout()
         self.hbox.addLayout(self.vbox2)
-        self.hbox.addWidget(self.graphVelocidade)
+        self.hbox.addLayout(self.vbox3)
         self.setLayout(self.hbox)
 
 
