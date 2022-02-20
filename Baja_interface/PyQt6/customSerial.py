@@ -49,7 +49,7 @@ class customSerial(QObject):
     def read_serial(self):
         while self.alive.isSet() and self.serialPort.is_open:
 
-            self.data = self.serialPort.readline().decode("utf-8").split(",")
+            self.data = self.serialPort.readline().decode("utf-8").split()
 
             if len(self.data) > 0:
                 with open(f"Arquivos_CSV/{self.arquivo}.csv", 'a+', newline='') as f:

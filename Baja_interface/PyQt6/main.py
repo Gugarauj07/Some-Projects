@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QGridLayout, QHBoxLayout, QComboBox, \
     QVBoxLayout, QLCDNumber
 import sys
@@ -104,6 +104,7 @@ class MainWindow(QWidget):
         self.labelCVT = QLabel("Temperatura da CVT: ")
         self.labelCVT.setStyleSheet(css)
         self.displayCVT = QLCDNumber()
+        self.displayCVT.setStyleSheet('color: #ffd700; background-color: blue')
 
         self.velocimetro = AnalogGaugeWidget()
         self.velocimetro.enableBarGraph = False
@@ -121,13 +122,13 @@ class MainWindow(QWidget):
         self.graphCVT.setTitle("Plotting CVT temperature")  # Define o titulo do grafico
         self.graphCVT.showGrid(x=True, y=True)  # Mostra os eixos no grafico
 
-        self.grid = QGridLayout
+        self.grid = QGridLayout()
         self.grid.addWidget(self.labelVelocidade, 0, 0)
-        self.grid.addWidget(self.labelRPM, 0, 1)
-        self.grid.addWidget(self.labelCVT, 0, 2)
-        self.grid.addWidget(self.displayVeloc, 1, 0)
+        self.grid.addWidget(self.labelRPM, 1, 0)
+        self.grid.addWidget(self.labelCVT, 2, 0)
+        self.grid.addWidget(self.displayVeloc, 0, 1)
         self.grid.addWidget(self.displayRPM, 1, 1)
-        self.grid.addWidget(self.displayCVT, 1, 2)
+        self.grid.addWidget(self.displayCVT, 2, 1)
 
         self.vbox2 = QVBoxLayout()
         self.vbox2.addLayout(self.grid)
