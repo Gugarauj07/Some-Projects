@@ -19,6 +19,8 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-12">
+        {% if 'accounts' not in request.path %}
+
         <br><br>
         <form method="get" action="{% url 'busca' %}">
           <div class="form-group row">
@@ -32,6 +34,7 @@
             </div>
           </div>
         </form>
+        {% endif %}
 
         {%block conteudo%} {%endblock%}
       </div>
