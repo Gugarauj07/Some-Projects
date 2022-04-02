@@ -1,3 +1,12 @@
 from django.db import models
+from Django.Blog.categorias.models import Categoria
 
-# Create your models here.
+
+class Post(models.Model):
+    titulo_post =
+    autor
+    data
+    conteudo
+    categoria
+    imagem
+    publicado
