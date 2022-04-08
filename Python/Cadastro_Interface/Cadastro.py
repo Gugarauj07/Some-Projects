@@ -9,7 +9,7 @@ def conecta():
     conexao = pymysql.connect(
         host='127.0.0.1',
         user='root',
-        password='password',
+        password='',
         db='cadastro',
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
