@@ -4,6 +4,7 @@ from contextlib import contextmanager
 from Listagem import Ui_SecondWindow
 
 
+
 @contextmanager
 def conecta():
     conexao = pymysql.connect(
@@ -21,7 +22,7 @@ def conecta():
         conexao.close()
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QtWidgets.QWidget):
 
     def Cadastrar(self):
         self.nome = self.lineEdit.text()
@@ -44,6 +45,7 @@ class Ui_MainWindow(object):
         self.ui = Ui_SecondWindow()
         self.ui.setupUi(self.window)
         self.window.show()
+        self.hide()
 
         with conecta() as conexao:
             with conexao.cursor() as cursor:
