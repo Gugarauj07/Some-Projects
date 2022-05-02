@@ -787,3 +787,5 @@ MigrationBackup/
 # End of https://www.gitignore.io/api/python,django,pycharm,pycharm+iml,pycharm+all,sublimetext,visualstudio,visualstudiocode,jupyternotebooks
 /Django/Blog/static/
 /Django/Agenda/static/
+/Django/Agenda/media/
+/Django/E-commerce/templates/static/
