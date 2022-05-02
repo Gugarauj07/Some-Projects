@@ -785,5 +785,5 @@ healthchecksdb
 MigrationBackup/
 
 # End of https://www.gitignore.io/api/python,django,pycharm,pycharm+iml,pycharm+all,sublimetext,visualstudio,visualstudiocode,jupyternotebooks
-/Django/Blog/static/vendor/
-/Django/Blog/static/vendor/
+/Django/Blog/static/
+/Django/Agenda/static/
